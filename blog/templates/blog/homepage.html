@@ -6,9 +6,8 @@
 <div style="border:1px solid rgb(101, 101, 101);">
     <div>
         <h2 class="d-inline-block">{{ post.title }}</h2>
-        <!--{% if session.logged_in %}-->
         <div class="btn-group mb-3" style="float: right">
-        <a href="{% url 'blog:index' %}" >
+        <a href="{% url 'blog:edit_post' post.id %}" >
                 <button type="button" class="btn btn-outline-secondary">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-pencil" viewBox="0 0 16 16">
@@ -35,7 +34,6 @@
                 </button>
               </form>
         </div>
-        <!--{% endif %}-->
     </div>
     <p>{{ post.body }}</p>
     <p>{{ post.pub_date }} </p>
