@@ -18,7 +18,8 @@
                     <span class="visually-hidden">Button</span>
                 </button>
             </a>
-            <form class="form-inline my-2 my-lg-0" action="" method="POST">
+            <form class="form-inline my-2 my-lg-0" action="{% url 'blog:delete_post' %}" method="POST">
+              {% csrf_token %}
                 <input type=hidden name="post_id" value="{{ post.id }}">
                 <button type="submit" class="btn btn-outline-secondary" name="action" value="delete">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"

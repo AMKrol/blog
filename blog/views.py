@@ -52,3 +52,11 @@ def edit_post(request, pk=None):
                      'body': q.body,
                      'is_published': q.is_published})
     return render(request, 'blog/edit_entry.html', {'form': form, 'id': pk})
+
+
+def delete_post(request):
+    if request.method == 'POST':
+        id = request.POST['post_id']
+        q = get_object_or_404(Entry, id=id)
+        q.delete()
+        return HttpResponseRedirect('/blog/')
