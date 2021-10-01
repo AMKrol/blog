@@ -63,12 +63,11 @@
           <button class="btn btn-outline-success" type="submit">Wyszukaj</button>
         </form>
 
-        {% if session.logged_in %}
-       <form class="form-inline my-2 my-lg-0" action="" method="POST">
-         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Wyloguj</button>
-       </form>
+      {% if user.is_authenticated %}
+      <p style="color:white">Zalogowany jako {{ user.username }}</p>
+       <a href="{% url 'blog:logout' %}" class="btn btn-secondary my-2 my-lg-0">Wyloguj</a>
      {% else %}
-       <a href="" class="btn btn-secondary my-2 my-lg-0">Zaloguj</a>
+       <a href="{% url 'blog:login' %}" class="btn btn-secondary my-2 my-lg-0">Zaloguj</a>
      {% endif %}
       </div>
     </div>

@@ -1,11 +1,12 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import permission_required
 
 from .models import Entry
-from .forms import EntryForm
+from .forms import EntryForm, LoginForm
 
 
 class HomepageView(generic.ListView):
@@ -16,6 +17,7 @@ class HomepageView(generic.ListView):
         return Entry.objects.order_by('-pub_date')[:5]
 
 
+@permission_required('blog.add_entry', login_url='/blog/login/')
 def get_new_post(request):
     if request.method == 'POST':
         form = EntryForm(request.POST)
@@ -32,6 +34,7 @@ def get_new_post(request):
     return render(request, 'blog/entry_form.html', {'form': form})
 
 
+@permission_required('blog.change_entry', login_url='/blog/login/')
 def edit_post(request, pk=None):
     q = get_object_or_404(Entry, pk=pk)
     if request.method == 'POST':
@@ -54,9 +57,34 @@ def edit_post(request, pk=None):
     return render(request, 'blog/edit_entry.html', {'form': form, 'id': pk})
 
 
+@permission_required('blog.delete_entry', login_url='/blog/login/')
 def delete_post(request):
     if request.method == 'POST':
         id = request.POST['post_id']
         q = get_object_or_404(Entry, id=id)
         q.delete()
         return HttpResponseRedirect('/blog/')
+
+
+def login_view(request):
+    form = LoginForm()
+    errors = None
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            print(user)
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect('/blog/')
+            else:
+                errors = form.errors
+    return render(request, "blog/login_form.html",
+                  {'form': form, 'errors': errors})
+
+
+def logout_view(request):
+    logout(request)
+    return HttpResponseRedirect('/blog/')
