@@ -6,3 +6,4 @@ class Entry(models.Model):
     body = models.CharField(max_length=200)
     pub_date = models.DateTimeField('date published')
     is_published = models.BooleanField(default=False)
+    created_by = models.CharField(max_length=200, default='admin')

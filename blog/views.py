@@ -4,6 +4,9 @@ from django.views import generic
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import permission_required
+from django.contrib.sessions.models import Session
+from django.contrib.auth.models import User
+
 
 from .models import Entry
 from .forms import EntryForm, LoginForm
@@ -20,13 +23,16 @@ class HomepageView(generic.ListView):
 @permission_required('blog.add_entry', login_url='/blog/login/')
 def get_new_post(request):
     if request.method == 'POST':
+        user = request.session['user']
+        print(user)
         form = EntryForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data['title']
             body = form.cleaned_data['body']
             is_published = form.cleaned_data['is_published']
             q = Entry(title=title, body=body,
-                      is_published=is_published, pub_date=timezone.now())
+                      is_published=is_published,
+                      pub_date=timezone.now(), created_by=request.session['user'])
             q.save()
             return HttpResponseRedirect('/blog/')
     else:
@@ -74,6 +80,7 @@ def login_view(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+            request.session['user'] = username
             user = authenticate(request, username=username, password=password)
             print(user)
             if user is not None:
